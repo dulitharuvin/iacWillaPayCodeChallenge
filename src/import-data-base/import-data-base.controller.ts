@@ -13,13 +13,6 @@ import { editFileName, jsonFileFilter } from 'src/utils/file-uploading.utils';
 export class ImportDataBaseController {
   constructor(private readonly importDataBaseService: ImportDataBaseService) {}
 
-  // @Post()
-  // @UseInterceptors(FileInterceptor('dbjsonfile'))
-  // uploadFile(@UploadedFile() file: Express.Multer.File) {
-  //   console.log(file.originalname);
-  //   console.log(file);
-  // }
-
   @Post()
   @UseInterceptors(
     FileInterceptor('dbschema', {

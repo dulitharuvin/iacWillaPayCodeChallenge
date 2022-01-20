@@ -1,8 +1,10 @@
 import { extname } from 'path';
+import { IVALID_INPUT_FILE_TYPE } from './constants/constants';
 
 export const jsonFileFilter = (req, file, callback) => {
   if (!file.originalname.match(/\.(json)$/)) {
-    return callback(new Error('Only image files are allowed!'), false);
+    req.fileValidationError = IVALID_INPUT_FILE_TYPE;
+    return callback(null, false);
   }
   callback(null, true);
 };

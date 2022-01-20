@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { Table } from './dto/Table';
 import { Column } from './dto/Column';
+import { FOREIGHN_KEY_TABLE_SEPERATOR } from '../utils/constants/constants';
 
 @Injectable()
 export class ImportDataBaseService {
@@ -42,7 +43,9 @@ export class ImportDataBaseService {
       col: Column,
     ) {
       if (col.foreign_key) {
-        const tableName = col.foreign_key.split('.')[0];
+        const tableName = col.foreign_key.split(
+          FOREIGHN_KEY_TABLE_SEPERATOR,
+        )[0];
         cols.push(tableName);
       }
       return cols;

@@ -6,38 +6,54 @@ import { FOREIGHN_KEY_TABLE_SEPERATOR } from '../utils/constants/constants';
 
 @Injectable()
 export class ImportDataBaseService {
-  processJsonFile(file: Express.Multer.File): Table[] {
+  private orderedTableList: Table[] = [];
+  private inputTableList: Table[] = [];
+
+  processJsonFile(file: Express.Multer.File): string[] {
     try {
       const dbSchemaData = readFileSync(file.path, 'utf8');
       const jsonData = JSON.parse(dbSchemaData);
-      const tables: Table[] = jsonData.map((table: any) => {
+      this.inputTableList = jsonData.map((table: any) => {
         return new Table(table);
       });
-      return this.sortJsonTableArray(tables);
+      this.initializeTableListSorting();
+      return this.orderedTableList.map((table) => table.name);
     } catch (error) {
       console.log(`ERROR: ${error}`);
     }
   }
 
-  private sortJsonTableArray(tables: Table[]): Table[] {
-    const orderedTables: Table[] = [];
-    const tableQueToAddToOrdered: Table[] = [];
-    tables.forEach((tbl) => {
-      const foreignKeyTables = this.getForeignKeyReferencedTables(tbl.columns);
-      if (foreignKeyTables.length === 0) {
-        orderedTables.push(tbl);
-      } else if (
-        this.canInsertToOrderedTableList(foreignKeyTables, orderedTables)
-      ) {
-        orderedTables.push(tbl);
-      } else {
-        tableQueToAddToOrdered.push(tbl);
-      }
+  initializeTableListSorting() {
+    this.inputTableList.forEach((tbl) => {
+      this.sortInputTableList(tbl.name);
     });
-    return [...orderedTables, ...tableQueToAddToOrdered];
   }
 
-  private getForeignKeyReferencedTables(columns: Column[]): string[] {
+  private sortInputTableList(tableName: string) {
+    const fkTable: Table = this.inputTableList.find((tbl) => {
+      return tbl.name === tableName;
+    });
+
+    const foreignKeyTables = this.getForeignKeyReferencedTables(
+      fkTable.columns,
+    );
+    if (foreignKeyTables.length === 0) {
+      this.insertToGlobalOrderedTableList(fkTable);
+    } else {
+      const prevTableNames: string[] = [];
+      foreignKeyTables.forEach((foriegnTable) => {
+        prevTableNames.push(fkTable.name);
+        this.sortInputTableList(foriegnTable);
+      });
+
+      this.inputTableList.forEach((inputTbl) => {
+        if (prevTableNames.indexOf(inputTbl.name) >= 0)
+          this.insertToGlobalOrderedTableList(inputTbl);
+      });
+    }
+  }
+
+  getForeignKeyReferencedTables(columns: Column[]): string[] {
     const foreignKeyTables = columns.reduce(function (
       cols: string[],
       col: Column,
@@ -54,12 +70,13 @@ export class ImportDataBaseService {
     return foreignKeyTables;
   }
 
-  private canInsertToOrderedTableList(
-    tableNamesToCheck: string[],
-    orderedTables: Table[],
-  ): boolean {
-    return tableNamesToCheck.every((tblName) =>
-      orderedTables.some((tbl) => tbl.name === tblName),
-    );
+  insertToGlobalOrderedTableList(table: Table) {
+    if (
+      this.orderedTableList.findIndex(
+        (ordTble) => ordTble.name === table.name,
+      ) === -1
+    ) {
+      this.orderedTableList.push(table);
+    }
   }
 }

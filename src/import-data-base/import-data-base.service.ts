@@ -10,6 +10,7 @@ export class ImportDataBaseService {
   private inputTableList: Table[] = [];
 
   processJsonFile(file: Express.Multer.File): string[] {
+    this.clearTableArrays();
     try {
       const dbSchemaData = readFileSync(file.path, 'utf8');
       const jsonData = JSON.parse(dbSchemaData);
@@ -78,5 +79,10 @@ export class ImportDataBaseService {
     ) {
       this.orderedTableList.push(table);
     }
+  }
+
+  clearTableArrays() {
+    this.orderedTableList = [];
+    this.inputTableList = [];
   }
 }

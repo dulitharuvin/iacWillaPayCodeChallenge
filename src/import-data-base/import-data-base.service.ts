@@ -39,16 +39,14 @@ export class ImportDataBaseService {
     if (foreignKeyTables.length === 0) {
       this.insertToGlobalOrderedTableList(table);
     } else {
-      const prevTableNames: string[] = [];
+      const originalTableName: string = table.name;
       foreignKeyTables.forEach((foriegnTable) => {
-        prevTableNames.push(table.name);
         this.sortInputTableList(foriegnTable);
       });
-
-      this.inputTableList.forEach((inputTbl) => {
-        if (prevTableNames.indexOf(inputTbl.name) >= 0)
-          this.insertToGlobalOrderedTableList(inputTbl);
-      });
+      const originalTable = this.inputTableList.find(
+        (tbl) => tbl.name === originalTableName,
+      );
+      this.insertToGlobalOrderedTableList(originalTable);
     }
   }
 

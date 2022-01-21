@@ -31,19 +31,17 @@ export class ImportDataBaseService {
   }
 
   private sortInputTableList(tableName: string) {
-    const fkTable: Table = this.inputTableList.find((tbl) => {
+    const table: Table = this.inputTableList.find((tbl) => {
       return tbl.name === tableName;
     });
 
-    const foreignKeyTables = this.getForeignKeyReferencedTables(
-      fkTable.columns,
-    );
+    const foreignKeyTables = this.getForeignKeyReferencedTables(table.columns);
     if (foreignKeyTables.length === 0) {
-      this.insertToGlobalOrderedTableList(fkTable);
+      this.insertToGlobalOrderedTableList(table);
     } else {
       const prevTableNames: string[] = [];
       foreignKeyTables.forEach((foriegnTable) => {
-        prevTableNames.push(fkTable.name);
+        prevTableNames.push(table.name);
         this.sortInputTableList(foriegnTable);
       });
 

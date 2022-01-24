@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { Table } from './dto/Table';
 import { Column } from './dto/Column';
-import { FOREIGHN_KEY_TABLE_SEPERATOR } from '../utils/constants/constants';
+import {
+  CHARACHTER_ENCODING,
+  FOREIGHN_KEY_TABLE_SEPERATOR,
+} from '../utils/constants/constants';
 
 @Injectable()
 export class ImportDataBaseService {
@@ -12,7 +15,7 @@ export class ImportDataBaseService {
   processJsonFile(file: Express.Multer.File): string[] {
     this.clearTableArrays();
     try {
-      const dbSchemaData = readFileSync(file.path, 'utf8');
+      const dbSchemaData = readFileSync(file.path, CHARACHTER_ENCODING);
       const jsonData = JSON.parse(dbSchemaData);
       this.inputTableList = jsonData.map((table: any) => {
         return new Table(table);

@@ -1,2 +1,3 @@
+export const CHARACHTER_ENCODING = 'utf8';
 export const IVALID_INPUT_FILE_TYPE = 'INVALID_INPUT_FILE_TYPE';
 export const FOREIGHN_KEY_TABLE_SEPERATOR = '.';

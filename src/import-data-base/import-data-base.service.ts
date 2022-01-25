@@ -27,7 +27,7 @@ export class ImportDataBaseService {
     }
   }
 
-  initializeTableListSorting() {
+  private initializeTableListSorting() {
     this.inputTableList.forEach((tbl) => {
       this.sortInputTableList(tbl.name);
     });
@@ -53,7 +53,7 @@ export class ImportDataBaseService {
     }
   }
 
-  getForeignKeyReferencedTables(columns: Column[]): string[] {
+  private getForeignKeyReferencedTables(columns: Column[]): string[] {
     const foreignKeyTables = columns.reduce(function (
       cols: string[],
       col: Column,
@@ -70,7 +70,7 @@ export class ImportDataBaseService {
     return foreignKeyTables;
   }
 
-  insertToGlobalOrderedTableList(table: Table) {
+  private insertToGlobalOrderedTableList(table: Table) {
     if (
       this.orderedTableList.findIndex(
         (ordTble) => ordTble.name === table.name,
@@ -80,7 +80,7 @@ export class ImportDataBaseService {
     }
   }
 
-  clearTableArrays() {
+  private clearTableArrays() {
     this.orderedTableList = [];
     this.inputTableList = [];
   }
